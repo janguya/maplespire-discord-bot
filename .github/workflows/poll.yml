@@ -1,0 +1,40 @@
+name: discord-poll
+
+# every ~10 minutes (GitHub may start scheduled runs a few minutes late under load)
+on:
+  schedule:
+    - cron: "3-59/10 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: discord-poll
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  poll:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore state
+        uses: actions/cache/restore@v4
+        with:
+          path: state
+          key: state-${{ github.run_id }}
+          restore-keys: state-
+
+      - name: Poll Discord
+        run: python3 poll.py
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+
+      - name: Save state
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state
+          key: state-${{ github.run_id }}

@@ -1,0 +1,21 @@
+name: keepalive
+
+# GitHub turns off scheduled workflows in a public repository after 60 days without activity;
+# re-enabling discord-poll once a month resets that timer (no commits needed).
+on:
+  schedule:
+    - cron: "17 3 1 * *"
+  workflow_dispatch: {}
+
+permissions:
+  actions: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Re-enable discord-poll
+        run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/poll.yml/enable"
+        env:
+          GH_TOKEN: ${{ github.token }}
