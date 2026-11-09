@@ -72,6 +72,17 @@ def time_snow(sec):
     return (int(sec * 1000) - 1420070400000) << 22
 
 
+def is_member(gid, uid):
+    # still in the server? (a member who joined and left gets no wave)
+    try:
+        call("GET", "/guilds/%s/members/%s" % (gid, uid))
+        return True
+    except RuntimeError as e:
+        if "-> 404" in str(e):
+            return False
+        raise
+
+
 def load_state():
     try:
         with open(STATE, encoding="utf-8") as f:
@@ -124,6 +135,10 @@ def main():
             if m["type"] != 7 or int(m["id"]) <= int(st["join_after"]) or m["id"] in waved:
                 continue
             if baseline or time.time() - snow_time(m["id"]) > GREET_MAX_AGE:
+                continue
+            # not bots (the bot's own join is one — it waved at itself once, 11-10) nor members who already left
+            if m["author"].get("bot") or not is_member(gid, m["author"]["id"]):
+                log("skip join", m["author"]["username"])
                 continue
             joins.append(m)
         for m in joins:
