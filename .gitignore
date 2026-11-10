@@ -1,3 +1,6 @@
 state/
 __pycache__/
 .secrets/
+node_modules/
+.wrangler/
+.dev.vars

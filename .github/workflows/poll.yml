@@ -1,9 +1,9 @@
 name: discord-poll
 
-# every ~10 minutes (GitHub may start scheduled runs a few minutes late under load)
+# Manual fallback only. The bot runs on Cloudflare Workers (worker/, cron every 10 minutes) since 2026-11-10:
+# GitHub started these scheduled runs hours late (2 runs in a day), so the schedule was removed.
+# The Actions state (cache) is separate from the Worker's KV state — run this only while the Worker is down.
 on:
-  schedule:
-    - cron: "3-59/10 * * * *"
   workflow_dispatch: {}
 
 concurrency:

@@ -1,0 +1,19 @@
+name = "maplespire-discord-bot"
+main = "src/index.js"
+compatibility_date = "2026-11-01"
+# cron-only worker: no public URL
+workers_dev = false
+
+[triggers]
+crons = ["*/10 * * * *"]
+
+# state between runs (KV namespace "STATE")
+[[kv_namespaces]]
+binding = "STATE"
+id = "f3dd9be38dbd4387889dd836f4740258"
+
+[vars]
+DRY = "0"
+
+[observability]
+enabled = true
